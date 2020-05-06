@@ -29,25 +29,44 @@ class StudentInsertState extends State<StudentInsert> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String selectedGender="Bay";
+  String selectedGender;
   List<String> genders=["Bay","Bayan"];
-  int gender=0;
+  int gender;
+
+@override
+void initState(){
+  super.initState();
+  if(student!=null){
+    txtFistName.text=student.firstName;
+    txtLastName.text=student.lastName;
+    txtEmail.text=student.email;
+    txtNo.text=student.no.toString();
+    selectedGender=student.gender==0?"Bay":"Bayan";
+    //gender=student.gender;
+  }
+  else{
+    selectedGender="Bay";
+    gender=0;
+  }
+}
 
 
-  //String dropDownValue="Bay";
-  @override
+    //String dropDownValue="Bay";
+@override
   Widget build(BuildContext context) {
     //int gender=genders.indexOf(selectedGender)
     // TODO: implement build
     //print(student);
-    if(student!=null){
+
+
+    /*if(student!=null){
       txtFistName.text=student.firstName;
       txtLastName.text=student.lastName;
       txtEmail.text=student.email;
       txtNo.text=student.no.toString();
-      selectedGender=student.gender==0?"Bay":"Bayan";
-      gender=student.gender;
-    }
+      //selectedGender="Bay";
+      //gender=student.gender;
+    }*/
 
     return studentDataInsert();
   }
@@ -83,9 +102,9 @@ class StudentInsertState extends State<StudentInsert> {
             validator: (value) {
               if (value.isEmpty) {
                 return "Bu alanı bş geçemezsüniz";
-              } /*else if(!value.contains("@")){
+              }else if(!value.contains("@")){
                         return "Bir email adresi girmelisiniz";
-              }*/
+              }
               return null;
             },
             decoration: InputDecoration(labelText: "Emailiniz"),
@@ -113,8 +132,11 @@ class StudentInsertState extends State<StudentInsert> {
               )).toList(),
               onChanged: (value) {
                 setState(() {
+                  print(value);
                   selectedGender=value;
+                  print(selectedGender);
                   gender=genders.indexOf(value);
+                  print(gender);
                 });
               },
             )
@@ -178,12 +200,22 @@ class StudentInsertState extends State<StudentInsert> {
 
   void insertStudent() async{
     if(student==null) {
+      //gender=genders.indexOf(selectedGender);
       int result = await db.insertStudent(Student(
           txtFistName.text, txtLastName.text, txtEmail.text,
           int.tryParse(txtNo.text), gender));
+            if(result!=0){
+              txtFistName.text="";
+              txtLastName.text="";
+              txtEmail.text="";
+              txtNo.text="";
+              selectedGender="Bay";
+            }
     }
     else{
        //print("Düzenle");
+      //gender=genders.indexOf(selectedGender);
+      print(gender);
        student.firstName=txtFistName.text;
        student.lastName=txtLastName.text;
        student.email=txtEmail.text;
@@ -194,6 +226,9 @@ class StudentInsertState extends State<StudentInsert> {
     }
   }
 
+  void test() async{
+
+  }
   void deleteStudent() async{
     int result=await db.deleteStudent(student.id);
     Navigator.of(context).pop();

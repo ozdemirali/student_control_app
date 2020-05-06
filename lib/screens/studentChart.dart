@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:studentcontrolapp/db/dbHelper.dart';
 
 
 
 
 class StudentChart extends StatefulWidget{
+  StudentChart();
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -16,29 +18,34 @@ class StudentChart extends StatefulWidget{
 }
 
 class StudentChartState extends State<StudentChart>{
+
+     DbHelper db=new DbHelper();
+     bool toggle=false;
+     double male,female;
       Map <String,double> dataMap=Map();
       List<Color> colorList=[
         Colors.blue,
         Colors.pink,
-        Colors.blue,
-        Colors.yellow,
       ];
 
 
   @override
   void initState(){
+    //getCount();
+    getCountGenders();
     super.initState();
-    dataMap.putIfAbsent("Bay",()=>5);
-    dataMap.putIfAbsent("Bayan", ()=>8);
+    //print(male.toString()+"male");
+    /*dataMap.putIfAbsent("Bay",()=>2);*/
+    //dataMap.putIfAbsent("Bayan", ()=>1);
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
 
+    // TODO: implement build
     return Container(
       child: Center(
-        child:PieChart(
+        child:toggle?PieChart(
                   dataMap: dataMap,
                   animationDuration: Duration(milliseconds: 800),
                   chartLegendSpacing: 32.0,
@@ -57,8 +64,44 @@ class StudentChartState extends State<StudentChart>{
                   color: Colors.blueGrey[900].withOpacity(0.9),
           ),
           chartType: ChartType.disc,
-        ),
+        ): Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.insert_chart),
+              iconSize: 100,
+              color: Colors.blue,
+              tooltip: "Grafik için Tıklayınız",
+              onPressed: (){
+                togglePieChart();
+              },
+            ),
+            Text("Tıklayınız",style:TextStyle(color: Colors.black) ,),
+          ],
+        )
       ),
     );
   }
+
+     void togglePieChart() {
+       setState(() {
+         dataMap.putIfAbsent("Bay",()=>male);
+         dataMap.putIfAbsent("Bayan", ()=>female);
+         toggle = !toggle;
+       });
+     }
+
+  void getCountGenders() async {
+    db.getCountGenders().then((data){
+      List<int> genderData=new List<int>();
+      for(var i=0;i<data.length;i++){
+        //print(data[i]);
+        genderData.add(data[i]);
+      }
+      setState(() {
+        male=genderData[0].toDouble();
+        female=genderData[1].toDouble();
+      });
+    });
+}
 }

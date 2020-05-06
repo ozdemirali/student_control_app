@@ -62,6 +62,7 @@ class DbHelper{
   //Update
   Future<int> updateStudent(Student student) async{
     Database db= await this.db;
+    print(student.gender);
     var result=await db.update(tblStudent, student.toMap(),where: "$colId=?",whereArgs: [student.id]);
     return result;
   }
@@ -72,6 +73,25 @@ class DbHelper{
     //var result=await db.rawDelete("Delete From $tblStudent Where $colId=$id");
     var result=await db.delete(tblStudent,where: "$colId=?",whereArgs: [id]);
     return result;
+  }
+
+  Future<int> getCountForChart(int gender) async{
+    Database db= await this.db;
+    List<Map<String,dynamic>> genderCount=await db.rawQuery("Select count(*) from $tblStudent Where $colGender=$gender");
+    var result=Sqflite.firstIntValue(genderCount);
+    //print(result);
+    return result;
+  }
+
+  Future<List> getCountGenders() async{
+    Database db=await this.db;
+    List<int> result=new List<int>();
+    List<Map<String,dynamic>> m=await db.rawQuery("Select count(*) from $tblStudent Where $colGender=0");
+    result.add(Sqflite.firstIntValue(m));
+    List<Map<String,dynamic>> f=await db.rawQuery("Select count(*) from $tblStudent Where $colGender=1");
+    result.add(Sqflite.firstIntValue(f));
+    return result;
+
   }
 
 }

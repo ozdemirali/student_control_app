@@ -9,12 +9,12 @@ import 'package:studentcontrolapp/screens/studentInsert.dart';
     ),
     child: Container(
       height: 600.0,
-      width:300.0,
+      width:600.0,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(5.0),
             child:StudentInsert(student), /*Text(
               'Simpe Custom Modal Dialog....',
               style: TextStyle(color: Colors.red),
